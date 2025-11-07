@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card p-4">
+  <h4 class="text-primary mb-3">🌐 Thu thập bài đăng từ mạng xã hội</h4>
+
+  <form method="POST" class="row g-3 mb-4">
+    <div class="col-md-5">
+      <label class="form-label">Chọn nền tảng</label>
+      <select class="form-select" name="platform">
+        <option value="facebook">Facebook</option>
+        <option value="twitter">Twitter (X)</option>
+        <option value="instagram">Instagram</option>
+      </select>
+    </div>
+    <div class="col-md-5">
+      <label class="form-label">Nhập từ khóa / Fanpage / Hashtag</label>
+      <input type="text" class="form-control" name="keyword" placeholder="VD: VinFast, #tiki" required>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">Thu thập</button>
+    </div>
+  </form>
+
+  {% if results %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Nền tảng</th>
+        <th>Nội dung</th>
+        <th>Thời gian</th>
+        <th>Cảm xúc</th>
+        <th>Độ tin cậy</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in results %}
+      <tr>
+        <td>{{ r.source }}</td>
+        <td>{{ r.text }}</td>
+        <td>{{ r.time }}</td>
+        <td>
+          {% if r.label == "POSITIVE" %}
+            <span class="badge bg-success">Tích cực</span>
+          {% elif r.label == "NEGATIVE" %}
+            <span class="badge bg-danger">Tiêu cực</span>
+          {% else %}
+            <span class="badge bg-secondary">Trung lập</span>
+          {% endif %}
+        </td>
+        <td>{{ r.score }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}

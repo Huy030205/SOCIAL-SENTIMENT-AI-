@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card p-4">
+  <h4 class="text-primary mb-3">Phân tích cảm xúc bài đăng</h4>
+  <form method="POST">
+    <div class="mb-3">
+      <label class="form-label">Nhập nội dung cần phân tích</label>
+      <textarea name="text" class="form-control" rows="5" placeholder="Nhập bài đăng hoặc bình luận..." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Phân tích ngay</button>
+  </form>
+
+  {% if result %}
+  <div class="alert alert-info mt-4">
+    <h5 class="mb-2">🔍 Kết quả phân tích:</h5>
+    <p><b>Văn bản:</b> {{ result.text }}</p>
+    <p><b>Cảm xúc:</b>
+      {% if result.label == 'POSITIVE' %}
+        <span class="badge bg-success">Tích cực 😊</span>
+      {% elif result.label == 'NEGATIVE' %}
+        <span class="badge bg-danger">Tiêu cực 😞</span>
+      {% else %}
+        <span class="badge bg-secondary">Trung lập 😐</span>
+      {% endif %}
+    </p>
+    <p><b>Độ tin cậy:</b> {{ result.score }}%</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
