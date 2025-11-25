@@ -3,10 +3,11 @@ import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from transformers import pipeline
+from social_collector import fetch_facebook_posts, fetch_instagram_posts
 import os
 
 app = Flask(__name__)
-app.secret_key = "thay_doi_thuoc_tinh_nay_sang_gi_ma_ban_muon"  # đổi cho bí mật hơn
+app.secret_key = "EAATH6l0HjMoBPyhhXjODLZBZCE7xFZARfBvt7wSPkbuZAy8woQDSPJTS1xoZCXRDtZCXBmSO5ZBlnUgBKjAXtgkspUNBF0KrMKlZBOfwoaiMakWB0hIt8yGhq1dXqSs3EhZCvVNou7h3DZCJyyALc2ZCZAcOsbZC9nD82mKcD4x5Xvbjg93lbSZAhqQr0kczdcOBIw5QCEDDHrVLjoZAzatz9374wbzePP5pmSbnk6edMwdZBgZDZD"  # đổi cho bí mật hơn
 
 DB_PATH = "users.db"
 
@@ -124,7 +125,43 @@ def logout():
     session.clear()
     flash("Bạn đã đăng xuất.", "info")
     return redirect(url_for("login"))
+@app.route("/collect", methods=["GET", "POST"])
+def collect():
+    if "user_id" not in session:
+        flash("Vui lòng đăng nhập để truy cập.", "error")
+        return redirect(url_for("login"))
 
+    results = []
+
+    if request.method == "POST":
+        platform = request.form.get("platform")
+        keyword = request.form.get("keyword", "").strip()
+
+        posts = []
+
+        # tạm thời demo: không dùng keyword, chỉ lấy vài bài gần nhất
+        if platform == "facebook":
+            posts = fetch_facebook_posts(limit=5)
+        elif platform == "instagram":
+            posts = fetch_instagram_posts(limit=5)
+        # nếu chưa dùng twitter thì bỏ qua
+
+        # chạy sentiment cho từng bài
+        for p in posts:
+            analysis = sentiment(p["text"])[0]
+            results.append({
+                "source": p["source"],
+                "text": p["text"],
+                "time": p["time"],
+                "label": analysis["label"],
+                "score": round(analysis["score"] * 100, 2),
+            })
+
+    return render_template(
+        "collect.html",
+        results=results,
+        username=session.get("username")
+    )
 if __name__ == "__main__":
     # Nếu chạy trong môi trường dev, debug=True ok. Khi nộp bài/triển khai, tắt debug.
     app.run(debug=True)

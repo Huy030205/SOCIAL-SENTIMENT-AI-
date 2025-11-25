@@ -39,6 +39,8 @@
           <span class="text-light me-2">Xin chào, <b>{{ session.username }}</b></span>
           <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-sm me-1">Dashboard</a>
           <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Đăng xuất</a>
+           <a class="btn btn-outline-light me-2" href="{{ url_for('collect') }}">Thu thập bài đăng</a>
+
         {% else %}
           <a href="{{ url_for('login') }}" class="btn btn-light btn-sm me-1">Đăng nhập</a>
           <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-sm">Đăng ký</a>
